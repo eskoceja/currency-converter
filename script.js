@@ -96,31 +96,53 @@ function showHistoricalRates() {
 
 // Save Favorite Pair -DONE
 function saveFavoritePair() {
-  const base = baseCurrency.value;
-  const target = targetCurrency.value;
-
-      if (!base || !target) {
-        alert("Please select both the currencies.");
-        return;
+    const base = baseCurrency.value;
+    const target = targetCurrency.value;
+  
+    if (!base || !target) {
+      alert("Please select both the currencies.");
+      return;
     }
-
-  // Check if the pair is already saved
-  const pairs = JSON.parse(localStorage.getItem("favoritePairs")) || [];
-  const pair = `${base}_${target}`;
-  if (pairs.includes(pair)) {
-    alert("This pair is already saved.");
-    return;
+  
+    // Check if the pair is already saved
+    const pairs = JSON.parse(localStorage.getItem("favoritePairs")) || [];
+    const pair = `${base}_${target}`;
+    if (pairs.includes(pair)) {
+      alert("This pair is already saved.");
+      return;
+    }
+    // Save the pair
+    pairs.push(pair);
+    localStorage.setItem("favoritePairs", JSON.stringify(pairs));
+  
+    // Create HTML elements to display the favorite pair
+    const pairDiv = document.createElement("div");
+    pairDiv.classList.add("favorite-pair");
+  
+    const pairText = document.createElement("span");
+    pairText.classList.add("favorite-pair-text");
+    pairText.innerText = `${base} / ${target}`;
+  
+    const removeBtn = document.createElement("button");
+    removeBtn.classList.add("remove-favorite");
+    removeBtn.innerText = "Remove";
+    removeBtn.addEventListener("click", () => {
+      // Remove the pair from the list
+      const index = pairs.indexOf(pair);
+      if (index > -1) {
+        pairs.splice(index, 1);
+      }
+      localStorage.setItem("favoritePairs", JSON.stringify(pairs));
+      // Remove the HTML elements
+      pairDiv.remove();
+    });
+  
+    // Append the HTML elements to the container
+    pairDiv.appendChild(pairText);
+    pairDiv.appendChild(removeBtn);
+    saveFavContainer.appendChild(pairDiv);
   }
-  // Save the pair
-  pairs.push(pair);
-  localStorage.setItem("favoritePairs", JSON.stringify(pairs));
-
-  //display
-  const html = pairs.map((p) => `<p>${p}</p>`).join("");
-  favoritePairsContainer.innerHTML = html;
-
-  displayFavs(newFav);
-}
+  
 
 function displayFavs() {
 
