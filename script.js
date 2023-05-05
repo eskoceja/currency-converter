@@ -37,16 +37,19 @@ function fetchExchangeRates() {
   let from = baseCurrency.value;
   let amount = amountInput.value;
 
-
-//   if (to === from) {
-//     alert("Please choose different currencies.");
-//     return;
-//   }
-
-//   if (amount < 0) {
-//     alert("Amount cannot be negative.");
-//     return;
-//   }
+  if (!to || !from) {
+    alert("Please choose different currencies.");
+    return;
+  }
+  if (isNaN(amount) || amount < 0) {
+    alert("Amount cannot be negative.");
+    return;
+  }
+  if (to === from) {
+    alert("The base and target currencies are the same. The converted amount is the same as the entered amount.");
+        resultSpan.innerText = `${amount.toFixed(2)} ${targetCurrency}`;
+        return;
+  }
 
   fetch(
     `https://api.apilayer.com/exchangerates_data/convert?to=${to}&from=${from}&amount=${amount}`,
@@ -96,6 +99,11 @@ function saveFavoritePair() {
   const base = baseCurrency.value;
   const target = targetCurrency.value;
 
+      if (!base || !target) {
+        alert("Please select both the currencies.");
+        return;
+    }
+
   // Check if the pair is already saved
   const pairs = JSON.parse(localStorage.getItem("favoritePairs")) || [];
   const pair = `${base}_${target}`;
@@ -111,4 +119,28 @@ function saveFavoritePair() {
   const html = pairs.map((p) => `<p>${p}</p>`).join("");
   favoritePairsContainer.innerHTML = html;
 
+  displayFavs(newFav);
 }
+
+function displayFavs() {
+
+    const dispbtn = document.createElement("button");
+    dispbtn.innerText = `${base} / ${target}`
+
+    dispbtn.addEventListener("click", () => {
+        base = baseCurrency;
+        target = targetCurrency;
+    })
+    favoriteCurrencyPairs.appendChild(dispbtn);
+    // favoritePairsContainer.innerHTML = html;
+}
+
+function loadFavorites() {
+    const favorites = JSON.parse(localStorage.getItem("favoriteCurrencyPairs")) || [];
+
+    for (const currencyPair of favorites) {
+        displayFavoriteCurrencyPair(currencyPair);
+    }
+}
+//calls the loadFavorites function when the page is loaded
+loadFavorites();
